@@ -4,6 +4,7 @@
 #include <Rcpp.h>
 #include <valarray>
 #include <algorithm>
+#include "Port.hpp"
 
 typedef double real_t;
 
@@ -242,8 +243,8 @@ public:
 
     Rcpp::NumericVector gradient(const Rcpp::NumericVector& x) {
 
-        Rcpp::Function& G = *gr.get();
-        return Rcpp::as<Rcpp::NumericVector>(G(x));
+        Rcpp::Function& Gr = *gr.get();
+        return Rcpp::as<Rcpp::NumericVector>(Gr(x));
     }
 
     void gradient(std::valarray<real_t>& g, real_t& maxgc) {
@@ -253,8 +254,8 @@ public:
         }
 
         maxgc = -1.0;
-        Rcpp::Function& G = *gr.get();
-        Rcpp::NumericVector gradient = Rcpp::as<Rcpp::NumericVector>(G(v));
+        Rcpp::Function& Gr = *gr.get();
+        Rcpp::NumericVector gradient = Rcpp::as<Rcpp::NumericVector>(Gr(v));
         g.resize(gradient.size());
         for (size_t i = 0; i < g.size(); i++) {
             g[i] = gradient[i];
@@ -274,8 +275,8 @@ public:
         Rcpp::Function& F = *fn.get();
         f = Rcpp::as<double>(F(v));
 
-        Rcpp::Function& G = *gr.get();
-        Rcpp::NumericVector gradient = Rcpp::as<Rcpp::NumericVector>(G(v));
+        Rcpp::Function& Gr = *gr.get();
+        Rcpp::NumericVector gradient = Rcpp::as<Rcpp::NumericVector>(Gr(v));
         g.resize(gradient.size());
         for (size_t i = 0; i < g.size(); i++) {
 
@@ -293,8 +294,8 @@ public:
         f = Rcpp::as<double>(F(v));
 
         maxgc = -1.0;
-        Rcpp::Function& G = *gr.get();
-        Rcpp::NumericVector gradient = Rcpp::as<Rcpp::NumericVector>(G(v));
+        Rcpp::Function& Gr = *gr.get();
+        Rcpp::NumericVector gradient = Rcpp::as<Rcpp::NumericVector>(Gr(v));
         g.resize(gradient.size());
         for (size_t i = 0; i < g.size(); i++) {
             g[i] = gradient[i];
@@ -312,8 +313,8 @@ public:
             v[i] = this->parameters[i].value;
         }
         maxgc = -1.0;
-        Rcpp::Function& G = *gr.get();
-        Rcpp::NumericVector g = Rcpp::as<Rcpp::NumericVector>(G(v));
+        Rcpp::Function& Gr = *gr.get();
+        Rcpp::NumericVector g = Rcpp::as<Rcpp::NumericVector>(Gr(v));
 
         for (size_t i = 0; i < g.size(); i++) {
 
@@ -333,8 +334,8 @@ public:
         }
 
         maxgc = -1.0;
-        Rcpp::Function& G = *gr.get();
-        Rcpp::NumericVector gradient = Rcpp::as<Rcpp::NumericVector>(G(v));
+        Rcpp::Function& Gr = *gr.get();
+        Rcpp::NumericVector gradient = Rcpp::as<Rcpp::NumericVector>(Gr(v));
         g.resize(gradient.size());
         for (size_t i = 0; i < g.size(); i++) {
             g[i] = gradient[i];
@@ -354,8 +355,8 @@ public:
         Rcpp::Function& F = *fn.get();
         f = Rcpp::as<double>(F(v));
 
-        Rcpp::Function& G = *gr.get();
-        Rcpp::NumericVector gradient = Rcpp::as<Rcpp::NumericVector>(G(v));
+        Rcpp::Function& Gr = *gr.get();
+        Rcpp::NumericVector gradient = Rcpp::as<Rcpp::NumericVector>(Gr(v));
         g.resize(gradient.size());
         for (size_t i = 0; i < g.size(); i++) {
 
@@ -373,8 +374,8 @@ public:
         f = Rcpp::as<double>(F(v));
 
         maxgc = -1.0;
-        Rcpp::Function& G = *gr.get();
-        Rcpp::NumericVector gradient = Rcpp::as<Rcpp::NumericVector>(G(v));
+        Rcpp::Function& Gr = *gr.get();
+        Rcpp::NumericVector gradient = Rcpp::as<Rcpp::NumericVector>(Gr(v));
         g.resize(gradient.size());
         for (size_t i = 0; i < g.size(); i++) {
             g[i] = gradient[i];
@@ -673,14 +674,14 @@ public:
                 }
 
 
-                Rcpp::NumericVector G = of.gradient(this->maxgc);
+                Rcpp::NumericVector Gr = of.gradient(this->maxgc);
 
                 ret["function_value"] = function_value;
                 ret["converged"] = true;
                 ret["iterations"] = iteration;
                 ret["maxgc"] = this->maxgc;
                 ret["parameters"] = of.parameter_values();
-                ret["gradient"] = G;
+                ret["gradient"] = Gr;
                 if (this->estimate_hessian) {
                     ret["hessian"] = this->get_estimated_hessian();
                 }
@@ -747,7 +748,7 @@ public:
                     max_line_searches)) {
 
                 of.evaluate(function_value);
-                Rcpp::NumericVector G = of.gradient(this->maxgc);
+                Rcpp::NumericVector Gr = of.gradient(this->maxgc);
                 ret["function_value"] = function_value;
 
                 if (this->maxgc <= this->tolerance) {
@@ -763,19 +764,19 @@ public:
 
                 ret["maxgc"] = this->maxgc;
                 ret["parameters"] = of.parameter_values();
-                ret["gradient"] = G;
+                ret["gradient"] = Gr;
                 return ret;
 
             }
 
             if ((fv - function_value) == 0.0 && no_progress_count == 15) {
-                Rcpp::NumericVector G = of.gradient(this->maxgc);
+                Rcpp::NumericVector Gr = of.gradient(this->maxgc);
                 ret["function_value"] = function_value;
                 ret["converged"] = false;
                 ret["iterations"] = this->max_iterations;
                 ret["maxgc"] = this->maxgc;
                 ret["parameters"] = of.parameter_values();
-                ret["gradient"] = G;
+                ret["gradient"] = Gr;
                 ret["message"] = "L-BFGS: No progress";
 
             } else if ((fv - function_value) == 0.0) {
@@ -950,13 +951,13 @@ public:
             }
 
             if ((fx - function_value) == 0.0 && no_progress_count == 15) {
-                Rcpp::NumericVector G = of.gradient(this->maxgc);
+                Rcpp::NumericVector Gr = of.gradient(this->maxgc);
                 ret["function_value"] = function_value;
                 ret["converged"] = false;
                 ret["iterations"] = this->max_iterations;
                 ret["maxgc"] = this->maxgc;
                 ret["parameters"] = of.parameter_values();
-                ret["gradient"] = G;
+                ret["gradient"] = Gr;
                 ret["message"] = "BFGS: No progress";
 
             } else if ((fx - function_value) == 0.0) {
@@ -1103,44 +1104,7 @@ public:
                 x[i] += stepSize * direction[i];
             }
         }
-        //
-        //        for (int iter = 0; iter < this->max_iterations; ++iter) {
-        //            // Compute gradient of the objective function at current point
-        //            // (in a real-world scenario, this would be done using numerical or analytical methods)
-        //            this->of.gradient(fx, this->gradient, this->maxgc);
-        //
-        //
-        //            // Compute search direction as the negative gradient
-        //            std::valarray<double> direction = gradient * .5;
-        //
-        //            for (int j = 0; j < n; j++) {
-        //                wg[j] = this->of.parameters[j].scaled_gradient(
-        //                        this->of.parameters[j].internal_value()) * this->gradient[j];
-        //            }
-        //
-        //            // Compute linear approximation of the objective function along the direction
-        //            double stepSize;
-        //            std::valarray<double> approximation = linearApproximation(iter, gradient, direction, stepSize);
-        //            //            double stepSize = lineSearch(x, direction, gradient);
-        //            // Perform the step: update x using the linear approximation
-        //            for (size_t i = 0; i < x.size(); ++i) {
-        //                x[i] += stepSize * (approximation[i] - x[i]); //direction[i];//stepSize * (approximation[i] - x[i]);
-        //            }
-        //
-        //            // Compute objective function value at the updated point
-        //            this->of.update(x);
-        //            this->of.evaluate(fx);
-        //
-        //            // Check for convergence
-        //            Rcpp::NumericVector ret_g = this->of.gradient(this->maxgc);
-        //            if (/*std::sqrt(std::inner_product(std::begin(direction), std::end(direction), std::begin(direction), 0.0)) */this->maxgc < tolerance) {
-        //                std::cout << "Converged in " << iter + 1 << " iterations." << std::endl;
-        //                ret["function_value"] = fx;
-        //                ret["parameters"] = this->of.parameter_values();
-        //                ret["maxgc"] = this->maxgc;
-        //                return ret;
-        //            }
-        //        }
+
 
         std::cout << "Maximum iterations reached without convergence." << std::endl;
         Rcpp::NumericVector ret_g = this->of.gradient(this->maxgc);
@@ -1155,6 +1119,152 @@ public:
 };
 
 std::shared_ptr<frank_wolfe> frank_wolfe::instance = std::make_shared<frank_wolfe>();
+
+
+
+class port_hunteler: public optimization_routine{
+public:
+  static std::shared_ptr<port_hunteler> instance;
+
+  virtual Rcpp::List run(){
+    Rcpp::List ret;
+
+    port::integer n = this->of.parameters.size();
+    std::vector<real_t> g(n, 0.0);
+    std::vector<real_t> d(n, 0.0);
+    std::vector<real_t> x_(n, 0.0);
+    std::vector<real_t> b(n * 2, 0.0);
+    port::integer lv = 71 + n * (n + 13) / 2;
+    std::vector<real_t> v(lv, 0.0);
+    port::integer liv = 60 + n;
+    std::vector<port::integer>iv(liv, 0);
+    v[0] = 2;
+    std::valarray<real_t> z(n);
+    std::valarray<real_t> wg(n);
+    std::vector<real_t> wg_(n);
+    this->best.resize(n);
+    this->x.resize(n);
+    this->gradient.resize(n);
+
+    for (int i = 0; i < n; i++) {
+      d[i] = 0.001;
+      if (this->of.parameters[i].bound) {
+        this->x[i] = this->of.parameters[i].internal_value();
+      } else {
+        this->x[i] = this->of.parameters[i].value;
+      }
+      this->gradient[i] = 0;
+    }
+
+    best = x;
+
+    double fx;
+    this->of.update(x);
+    this->of.evaluate(fx);
+    real_t function_value = fx;
+    this->of.gradient(this->gradient, this->maxgc);
+
+    real_t previous_function_value;
+
+    size_t iter = 0;
+
+    do {
+
+
+      for (int i = 0; i < n; i++) {
+        x_[i] =  this->of.parameters[i].internal_value();
+        x[i] = x_[i];
+        g[i] = this->gradient[i];
+        wg[i] = this->of.parameters[i].scaled_gradient(
+          this->of.parameters[i].internal_value()) * this->gradient[i];
+        wg_[i] = wg[i];
+      }
+
+
+
+      port::drmng_<real_t>(/*b.data(),*/ d.data(), &fx, wg_.data(), iv.data(), &liv, &lv, &n, v.data(), x_.data());
+
+
+
+      if ((iv[0]) == 2) {
+
+
+        for (int i = 0; i < n; i++) {
+          this->of.parameters[i].update_value(x_[i]);
+          this->x[i] = x_[i];
+        }
+
+
+        previous_function_value = fx;
+        real_t f = 0.0;
+
+        this->of.update(x);
+        this->of.evaluate(fx);
+        function_value = fx;
+        this->of.gradient(this->gradient, this->maxgc);
+
+        for (int i = 0; i < n; i++) {
+          g[i] = this->gradient[i];
+          wg[i] = this->of.parameters[i].scaled_gradient(
+            this->of.parameters[i].internal_value()) * this->gradient[i];
+          wg_[i] = wg[i];
+        }
+        z = wg;
+
+        if (this->maxgc <= this->tolerance) {
+          break;
+        }
+
+
+      } else {
+
+        for (int i = 0; i < n; i++) {
+          this->of.parameters[i].update_value(x_[i]);
+          this->x[i] = x_[i];
+        }
+
+
+
+        previous_function_value = fx;
+        // f = 0.0;
+        this->of.update(x);
+        this->of.evaluate(fx);
+        function_value = fx;
+
+        Rcpp::Rcout<<fx<<std::endl;
+
+        if (fx != fx) {
+          std::cout << "Objective Function signaling NaN";
+        }
+      }
+
+
+      if (this->maxgc <= this->tolerance) {
+        break;
+      }
+
+
+      iter++;
+
+    } while (iter < this->max_iterations || (iv[0]) < 3);
+
+
+
+    this->of.update(x);
+    Rcpp::NumericVector ret_g = this->of.gradient(this->maxgc);
+    this->of.evaluate(fx);
+    ret["function_value"] = fx;
+    ret["iterations"] = iter;
+    ret["parameters"] = this->of.parameter_values();
+    ret["maxgc"] = this->maxgc;
+
+
+    return ret;
+  }
+
+};
+
+std::shared_ptr<port_hunteler> port_hunteler::instance = std::make_shared<port_hunteler>();
 
 //
 // class cg: public optimization_routine{
@@ -1184,40 +1294,6 @@ std::shared_ptr<frank_wolfe> frank_wolfe::instance = std::make_shared<frank_wolf
 //   }
 //
 // };
-//
-// std::shared_ptr<newton> newton::instance = std::make_shared<newton>();
-//
-// class franke_wolf: public optimization_routine{
-// public:
-//   static std::shared_ptr<franke_wolf> instance;
-//
-//   virtual Rcpp::List run(){
-//     Rcpp::List ret;
-//
-//
-//     return ret;
-//   }
-//
-// };
-//
-// std::shared_ptr<franke_wolf> franke_wolf::instance = std::make_shared<franke_wolf>();
-//
-//
-// class ga: public optimization_routine{
-// public:
-//   static std::shared_ptr<ga> instance;
-//
-//   virtual Rcpp::List run(){
-//     Rcpp::List ret;
-//
-//
-//     return ret;
-//   }
-//
-// };
-//
-// std::shared_ptr<ga> ga::instance = std::make_shared<ga>();
-
 
 
 #endif

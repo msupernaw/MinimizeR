@@ -14,7 +14,7 @@ x<-c(0.60)
 lb_<-c(0.5)
 ub_<-c(4.5)
 opt<-MinimizeR(x,Cos, Cos_dx
-               , control = list(routine = "frank_wolfe",
+               , control = list(routine = "port_hunteler",
                                              hessian = TRUE,
                                              max_iterations = 1000,
                                              iprint = 10000000,

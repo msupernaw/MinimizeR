@@ -1,7 +1,7 @@
 
 #include <Rcpp.h>
 using namespace Rcpp;
-#include "../inst/include/minimizeR.hpp"
+#include "../inst/include/MinimizeR.hpp"
 
 // [[Rcpp::export]]
 List rcpp_hello_world() {
@@ -98,6 +98,8 @@ Rcpp::List MinimizeR(Rcpp::NumericVector par,
     minimizer = bfgs::instance;
   }else if(routine == "frank_wolfe"){
     minimizer = frank_wolfe::instance;
+  }else if(routine == "port_hunteler"){
+    minimizer = port_hunteler::instance;
   }
 
 
